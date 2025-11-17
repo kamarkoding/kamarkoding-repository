@@ -1,0 +1,10 @@
+<?php
+
+namespace DummyNamespace\Eloquent;
+
+use DummyNamespace\Contracts\DummyClassInterface;
+
+class DummyClass implements DummyClassInterface
+{
+    //
+}
