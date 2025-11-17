@@ -1,16 +1,18 @@
 {
-  "name": "kamarkoding/kamarkoding-repository",
-  "description": "Repository generator for Laravel",
-  "autoload": {
-    "psr-4": {
-      "Kamarkoding\\KamarkodingRepository\\": "src/"
+    "name": "kamarkoding/kamarkoding-repository",
+    "description": "Repository generator for Laravel",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Kamarkoding\\KamarkodingRepository\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Kamarkoding\\KamarkodingRepository\\Providers\\RepositoryServiceProvider"
+            ]
+        }
     }
-  },
-  "extra": {
-    "laravel": {
-      "providers": [
-        "Kamarkoding\\KamarkodingRepository\\Providers\\RepositoryServiceProvider"
-      ]
-    }
-  }
 }

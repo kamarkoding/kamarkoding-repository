@@ -1,8 +1,8 @@
 <?php
 
-namespace DummyNamespace\Contracts;
+namespace App\Repository\Contracts;
 
-interface DummyClassInterface
+interface {{name}}RepositoryInterface
 {
-    //
+
 }

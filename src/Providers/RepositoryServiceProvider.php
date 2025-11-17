@@ -3,16 +3,19 @@
 namespace Kamarkoding\KamarkodingRepository\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Str;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Str;
+use Kamarkoding\KamarkodingRepository\Console\MakeRepositoryCommand;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        $this->commands([
-            \Kamarkoding\KamarkodingRepository\Console\MakeRepositoryCommand::class,
-        ]);
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                MakeRepositoryCommand::class,
+            ]);
+        }
 
         $this->autoBindRepositories();
     }
@@ -29,6 +32,7 @@ class RepositoryServiceProvider extends ServiceProvider
 
         foreach ($filesystem->files($contractPath) as $contract) {
             $interfaceName = pathinfo($contract->getFilename(), PATHINFO_FILENAME);
+
             $interfaceClass = "App\\Repository\\Contracts\\{$interfaceName}";
             $className = Str::replaceLast('Interface', '', $interfaceName);
             $implementationClass = "App\\Repository\\Eloquent\\{$className}";

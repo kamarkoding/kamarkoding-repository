@@ -12,72 +12,71 @@ class MakeRepositoryCommand extends Command
     protected $description = 'Create a repository interface and implementation';
 
     protected $files;
-    protected $basePath;
 
     public function __construct(Filesystem $files)
     {
         parent::__construct();
         $this->files = $files;
-        $this->basePath = app_path('Repository');
     }
 
     public function handle()
     {
         $name = Str::studly($this->argument('name'));
 
-        $this->createFolders();
-        $this->createInterface($name);
-        $this->createRepository($name);
+        $interfacePath = app_path("Repository/Contracts/{$name}RepositoryInterface.php");
+        $classPath     = app_path("Repository/Eloquent/{$name}Repository.php");
 
-        $this->info("Repository {$name} created!");
+        $this->makeDirectory($interfacePath);
+        $this->makeDirectory($classPath);
+
+        $this->createFromStub(
+            $this->stub('repository-interface.stub'),
+            $interfacePath,
+            ['{{name}}' => $name]
+        );
+
+        $this->createFromStub(
+            $this->stub('repository.stub'),
+            $classPath,
+            ['{{name}}' => $name]
+        );
+
+        $this->info("Repository created successfully.");
     }
 
-    protected function createFolders()
+    protected function stub(string $file)
     {
-        $paths = [
-            "{$this->basePath}/Contracts",
-            "{$this->basePath}/Eloquent",
-        ];
+        return __DIR__ . '/../Stubs/' . $file;
+    }
 
-        foreach ($paths as $path) {
-            if (!$this->files->exists($path)) {
-                $this->files->makeDirectory($path, 0755, true);
-            }
+    protected function createFromStub(string $stubPath, string $targetPath, array $replace)
+    {
+        if (! $this->files->exists($stubPath)) {
+            throw new \Exception("Stub not found: {$stubPath}");
         }
-    }
 
-    protected function createInterface($name)
-    {
-        $stub = $this->getStub('repository-interface');
-
-        $content = str_replace(
-            ['DummyNamespace', 'DummyClassInterface'],
-            ['App\\Repository', "{$name}RepositoryInterface"],
-            $stub
-        );
-
-        $file = "{$this->basePath}/Contracts/{$name}RepositoryInterface.php";
-
-        $this->files->put($file, $content);
-    }
-
-    protected function createRepository($name)
-    {
-        $stub = $this->getStub('repository');
+        if ($this->files->exists($targetPath)) {
+            $this->warn("Skipped (already exists): {$targetPath}");
+            return;
+        }
 
         $content = str_replace(
-            ['DummyNamespace', 'DummyClass'],
-            ['App\\Repository', "{$name}Repository"],
-            $stub
+            array_keys($replace),
+            array_values($replace),
+            $this->files->get($stubPath)
         );
 
-        $file = "{$this->basePath}/Eloquent/{$name}Repository.php";
+        $this->files->put($targetPath, $content);
 
-        $this->files->put($file, $content);
+        $this->info("Created: {$targetPath}");
     }
 
-    protected function getStub($path)
+    protected function makeDirectory($path)
     {
-        return $this->files->get(__DIR__."/../../Stubs/{$path}.stub");
+        $dir = dirname($path);
+
+        if (!$this->files->isDirectory($dir)) {
+            $this->files->makeDirectory($dir, 0755, true);
+        }
     }
 }

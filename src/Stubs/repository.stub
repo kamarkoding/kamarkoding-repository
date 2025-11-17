@@ -1,10 +1,10 @@
 <?php
 
-namespace DummyNamespace\Eloquent;
+namespace App\Repository\Eloquent;
 
-use DummyNamespace\Contracts\DummyClassInterface;
+use App\Repository\Contracts\{{name}}RepositoryInterface;
 
-class DummyClass implements DummyClassInterface
+class {{name}}Repository implements {{name}}RepositoryInterface
 {
     //
 }
