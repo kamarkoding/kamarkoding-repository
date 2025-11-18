@@ -110,7 +110,7 @@ UserRepositoryInterface::class → UserRepository::class
 ```
 Tidak perlu lagi menambahkan:
 ```josn
-$this->app->bind(UserRepositoryInterface::class, ModuleRepository::class);
+$this->app->bind(UserRepositoryInterface::class, UserRepository::class);
 ```
 
 ## Penggunaan dalam Controller Laravel
@@ -156,7 +156,6 @@ class UserIndex extends Component
     public function delete($id)
     {
         $this->Users->delete($id);
-        $this->dispatch('toast-success', message: "User deleted");
     }
 
     public function render()
