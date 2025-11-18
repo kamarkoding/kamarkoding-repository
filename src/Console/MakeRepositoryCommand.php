@@ -68,7 +68,7 @@ class MakeRepositoryCommand extends Command
 
         $this->files->put($targetPath, $content);
 
-        $this->info("Created: {$targetPath}");
+        $this->info("Created: Class " . basename($targetPath));
     }
 
     protected function makeDirectory($path)
