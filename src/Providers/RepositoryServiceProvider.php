@@ -26,16 +26,16 @@ class RepositoryServiceProvider extends ServiceProvider
         $contractPath = app_path('Repository/Contracts');
         $eloquentPath = app_path('Repository/Eloquent');
 
-        if (!$filesystem->exists($contractPath) || !$filesystem->exists($eloquentPath)) {
-            return;
-        }
+            if (!$filesystem->exists($contractPath) || !$filesystem->exists($eloquentPath)) {
+                return;
+            }
 
         foreach ($filesystem->files($contractPath) as $contract) {
-            $interfaceName = pathinfo($contract->getFilename(), PATHINFO_FILENAME);
-
-            $interfaceClass = "App\\Repository\\Contracts\\{$interfaceName}";
-            $className = Str::replaceLast('Interface', '', $interfaceName);
-            $implementationClass = "App\\Repository\\Eloquent\\{$className}";
+            
+            $interfaceName          = pathinfo($contract->getFilename(), PATHINFO_FILENAME);
+            $interfaceClass         = "App\\Repository\\Contracts\\{$interfaceName}";
+            $className              = Str::replaceLast('Interface', '', $interfaceName);
+            $implementationClass    = "App\\Repository\\Eloquent\\{$className}";
 
             if (class_exists($implementationClass)) {
                 $this->app->bind($interfaceClass, $implementationClass);
