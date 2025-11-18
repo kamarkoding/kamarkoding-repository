@@ -32,7 +32,7 @@ Jika package disimpan secara lokal:
 ]
 ```
 2. Install melalui Composer
-```json
+```
 composer require kamarkoding/kamarkoding-repository
 ```
 Laravel otomatis mendaftarkan Service Provider melalui auto-discovery.
@@ -48,16 +48,17 @@ Jika auto-discovery dimatikan, daftar manual di
 
 ## Membuat Repository Baru
 ### Gunakan perintah berikut:
-```josn
+
+```php
 php artisan make:repository User
 ```
 Output :
-```json
+```
 Created: Class UserRepositoryInterface.php
 Created: Class UserRepository.php
 Repository created successfully.
 ```
-```josn
+```
 app/
 └── Repository/
     ├── Contracts/
@@ -68,7 +69,7 @@ app/
 
 ## Struktur Folder
 ### Struktur lengkap setelah membuat repository:
-```json
+```
 app/
 └── Repository/
     ├── Contracts/
@@ -77,7 +78,7 @@ app/
         └── <Name>Repository.php
 ```
 File: Interface
-```json
+```
 <?php
 
 namespace App\Repository\Contracts;
@@ -89,7 +90,7 @@ interface UserRepositoryInterface
 ```
 
 File: Implementasi
-```json
+```
 <?php
 
 namespace App\Repository\Eloquent;
