@@ -170,7 +170,7 @@ Atau menggunakan resolver otomatis:
 ```josn
 public function getRepository()
 {
-    return app(ModuleRepositoryInterface::class);
+    return app(UserRepositoryInterface::class);
 }
 ```
 
