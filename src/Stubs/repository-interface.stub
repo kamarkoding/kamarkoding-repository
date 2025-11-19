@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repository\Contracts;
+namespace {{namespace}};
 
 interface {{name}}RepositoryInterface
 {
-
+    //
 }

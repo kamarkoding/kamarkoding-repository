@@ -144,13 +144,18 @@ class UserController extends Controller
 use Livewire\Component;
 use App\Repository\Contracts\UserRepositoryInterface;
 
+protected UserRepositoryInterface $userRepository;
+
 class UserIndex extends Component
 {
     public UserRepositoryInterface $Users;
 
-    public function mount(UserRepositoryInterface $Users)
+    /**
+    * Inject repository langsung dari container.
+    */
+    public function mount(UserRepositoryInterface $userRepository)
     {
-        $this->Users = $Users;
+        $this->userRepository = $userRepository;
     }
 
     public function delete($id)

@@ -13,6 +13,8 @@ class MakeRepositoryCommand extends Command
 
     protected $files;
 
+
+
     public function __construct(Filesystem $files)
     {
         parent::__construct();
@@ -21,27 +23,75 @@ class MakeRepositoryCommand extends Command
 
     public function handle()
     {
-        $name = Str::studly($this->argument('name'));
+        $rawName = $this->argument('name');
+        $parsed = $this->parseName($rawName);
 
-        $interfacePath = app_path("Repository/Contracts/{$name}RepositoryInterface.php");
-        $classPath     = app_path("Repository/Eloquent/{$name}Repository.php");
+        $className       = $parsed['class'];          // Nama repository (User)
+        $folderPath      = $parsed['path'];           // Folder (Admin)
+        $namespaceSuffix = $parsed['namespacePath'];  // Admin
 
+        // Tentukan lokasi file interface
+        $interfacePath = app_path(
+            $folderPath
+                ? "Repository/Contracts/{$folderPath}/{$className}RepositoryInterface.php"
+                : "Repository/Contracts/{$className}RepositoryInterface.php"
+        );
+
+        // Tentukan lokasi file repository class
+        $classPath = app_path(
+            $folderPath
+                ? "Repository/Eloquent/{$folderPath}/{$className}Repository.php"
+                : "Repository/Eloquent/{$className}Repository.php"
+        );
+
+        // Buat folder jika belum ada
         $this->makeDirectory($interfacePath);
         $this->makeDirectory($classPath);
 
+        // Namespace final
+        $interfaceNamespace = "App\\Repository\\Contracts" . ($namespaceSuffix ? "\\{$namespaceSuffix}" : "");
+        $classNamespace     = "App\\Repository\\Eloquent"  . ($namespaceSuffix ? "\\{$namespaceSuffix}" : "");
+
+        // Buat interface
         $this->createFromStub(
             $this->stub('repository-interface.stub'),
             $interfacePath,
-            ['{{name}}' => $name]
+            [
+                '{{name}}'      => $className,
+                '{{namespace}}' => $interfaceNamespace,
+            ]
         );
 
+        // Buat class repository
         $this->createFromStub(
             $this->stub('repository.stub'),
             $classPath,
-            ['{{name}}' => $name]
+            [
+                '{{name}}'      => $className,
+                '{{namespace}}' => $classNamespace,
+            ]
         );
 
         $this->info("Repository created successfully.");
+    }
+
+    /**
+     * Parsing "Admin/User" → folder = Admin, class = User
+     */
+    protected function parseName($name)
+    {
+        $name = str_replace('\\', '/', $name);
+
+        $segments = explode('/', $name);
+
+        $class = array_pop($segments); // Nama class
+        $path  = implode('/', $segments); // Folder
+
+        return [
+            'class'         => Str::studly($class),
+            'path'          => $path,
+            'namespacePath' => str_replace('/', '\\', $path),
+        ];
     }
 
     protected function stub(string $file)
@@ -68,14 +118,14 @@ class MakeRepositoryCommand extends Command
 
         $this->files->put($targetPath, $content);
 
-        $this->info("Created: Class " . basename($targetPath));
+        $this->info("Created: " . basename($targetPath));
     }
 
     protected function makeDirectory($path)
     {
         $dir = dirname($path);
 
-        if (!$this->files->isDirectory($dir)) {
+        if (! $this->files->isDirectory($dir)) {
             $this->files->makeDirectory($dir, 0755, true);
         }
     }
